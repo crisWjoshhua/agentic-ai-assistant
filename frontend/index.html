@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Agentic AI Assistant</title>
+
+
+    <style>
+
+        /* =========================================
+           PAGE
+        ========================================== */
+
+        body {
+
+            margin: 0;
+
+            font-family: Arial, sans-serif;
+
+            background: #f4f6f8;
+
+        }
+
+
+        /* =========================================
+           MAIN APPLICATION
+        ========================================== */
+
+        .app {
+
+            width: 80%;
+
+            max-width: 900px;
+
+            margin: 40px auto;
+
+            background: white;
+
+            border-radius: 12px;
+
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+
+            overflow: hidden;
+
+        }
+
+
+        /* =========================================
+           HEADER
+        ========================================== */
+
+        .header {
+
+            background: #1f2937;
+
+            color: white;
+
+            padding: 20px;
+
+            text-align: center;
+
+        }
+
+
+        .header h1 {
+
+            margin: 0;
+
+            font-size: 28px;
+
+        }
+
+
+        .header p {
+
+            margin: 8px 0 0;
+
+            font-size: 14px;
+
+        }
+
+
+        /* =========================================
+           CHAT AREA
+        ========================================== */
+
+        #chat-container {
+
+            height: 750px;
+
+            overflow-y: auto;
+
+            padding: 20px;
+
+        }
+
+
+        /* =========================================
+           MESSAGES
+        ========================================== */
+
+        .message {
+
+            margin-bottom: 15px;
+
+            padding: 12px 15px;
+
+            border-radius: 10px;
+
+            max-width: 75%;
+
+            line-height: 1.5;
+
+        }
+
+
+        .user-message {
+
+            margin-left: auto;
+
+            background: #dbeafe;
+
+        }
+
+
+        .assistant-message {
+
+            margin-right: auto;
+
+            background: #f1f5f9;
+
+        }
+
+
+        .sender {
+
+            font-weight: bold;
+
+            margin-bottom: 5px;
+
+        }
+
+
+        /* =========================================
+           INPUT AREA
+        ========================================== */
+
+        .input-area {
+
+            display: flex;
+
+            padding: 15px;
+
+            border-top: 1px solid #ddd;
+
+            gap: 10px;
+
+        }
+
+
+        #message-input {
+
+            flex: 1;
+
+            padding: 12px;
+
+            border: 1px solid #ccc;
+
+            border-radius: 8px;
+
+            font-size: 15px;
+
+        }
+
+
+        button {
+
+            padding: 12px 20px;
+
+            border: none;
+
+            border-radius: 8px;
+
+            background: #2563eb;
+
+            color: white;
+
+            cursor: pointer;
+
+            font-size: 15px;
+
+        }
+
+
+        button:hover {
+
+            background: #1d4ed8;
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================================
+         APPLICATION
+    ========================================== -->
+
+    <div class="app">
+
+
+        <!-- =====================================
+             HEADER
+        ====================================== -->
+
+        <div class="header">
+
+            <h1>🤖 Agentic AI Assistant</h1>
+
+            <p>Powered by LangGraph + Gemini + RAG</p>
+
+        </div>
+
+
+        <!-- =====================================
+             CHAT AREA
+        ====================================== -->
+
+        <div id="chat-container">
+
+        </div>
+
+
+        <!-- =====================================
+             INPUT AREA
+        ====================================== -->
+
+        <div class="input-area">
+
+            <input
+                type="text"
+                id="message-input"
+                placeholder="Ask something..."
+            >
+
+            <button onclick="sendMessage()">
+                Send
+            </button>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- =========================================
+         JAVASCRIPT
+    ========================================== -->
+
+    <script>
+
+
+        // ========================================
+        // CONVERSATION ID
+        // ========================================
+
+        const threadId = "conversation_1";
+
+
+        // ========================================
+        // SEND MESSAGE
+        // ========================================
+
+        async function sendMessage() {
+
+
+            // Get input element
+
+            const input =
+                document.getElementById("message-input");
+
+
+            // Get chat container
+
+            const chatContainer =
+                document.getElementById("chat-container");
+
+
+            // Get user message
+
+            const message =
+                input.value.trim();
+
+
+            // Don't send empty messages
+
+            if (message === "") {
+
+                return;
+
+            }
+
+
+            // ====================================
+            // DISPLAY USER MESSAGE
+            // ====================================
+
+            chatContainer.innerHTML += `
+
+                <div class="message user-message">
+
+                    <div class="sender">
+                        You
+                    </div>
+
+                    <div>
+                        ${message}
+                    </div>
+
+                </div>
+
+            `;
+
+
+            // Clear input
+
+            input.value = "";
+
+
+            // ====================================
+            // SEND REQUEST TO FASTAPI
+            // ====================================
+
+            const response = await fetch("/chat", {
+
+                method: "POST",
+
+                headers: {
+
+                    "Content-Type":
+                        "application/json"
+
+                },
+
+                body: JSON.stringify({
+
+                    message: message,
+
+                    thread_id: threadId
+
+                })
+
+            });
+
+
+            // ====================================
+            // CONVERT RESPONSE TO JSON
+            // ====================================
+
+            const data =
+                await response.json();
+
+
+            // ====================================
+            // DISPLAY ASSISTANT RESPONSE
+            // ====================================
+
+            chatContainer.innerHTML += `
+
+                <div class="message assistant-message">
+
+                    <div class="sender">
+                        Assistant
+                    </div>
+
+                    <div>
+                        ${data.response}
+                    </div>
+
+                </div>
+
+            `;
+
+
+            // Automatically scroll down
+
+            chatContainer.scrollTop =
+                chatContainer.scrollHeight;
+
+        }
+
+    </script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,28 @@
+# Environment variables
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Virtual environment
+venv/
+.venv/
+
+# Databases
+*.db
+*.db-shm
+*.db-wal
+
+# ChromaDB
+RAG/chroma_db/
+RAG/chunks.pkl
+RAG/faiss_index.bin
+
+# IDE
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
