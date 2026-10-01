@@ -13,16 +13,15 @@ embedding_model = SentenceTransformer(
 
 load_dotenv()
 
-CHROMA_DB_PATH = os.getenv(
-    "CHROMA_DB_PATH",
-    "RAG/chroma_db"
+DATA_DIR = os.getenv("DATA_DIR", "RAG")
+
+CHROMA_PATH = os.path.join(
+    DATA_DIR,
+    "chroma_db"
 )
-# --------------------------------------------------
-# 2. Connect to the persistent Chroma database
-# --------------------------------------------------
 
 client = chromadb.PersistentClient(
-    path=CHROMA_DB_PATH
+    path=CHROMA_PATH
 )
 
 
